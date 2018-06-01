@@ -549,8 +549,8 @@ static void bcm2835_sdhost_dma_complete(void *param)
 		while (host->drain_words) {
 			u32 edm = bcm2835_sdhost_read(host, SDEDM);
 			if ((edm >> 4) & 0x1f)
-				*(buf++) = bcm2835_sdhost_read(host,
-							       SDDATA);
+				*(buf++) = cpu_to_le32(bcm2835_sdhost_read(host,
+                                                                           SDDATA));
 			host->drain_words--;
 		}
 
@@ -639,7 +639,7 @@ static void bcm2835_sdhost_read_block_pio(struct bcm2835_host *host)
 			copy_words -= words;
 
 			while (words) {
-				*(buf++) = bcm2835_sdhost_read(host, SDDATA);
+				*(buf++) = cpu_to_le32(bcm2835_sdhost_read(host, SDDATA));
 				words--;
 			}
 		}
@@ -729,7 +729,7 @@ static void bcm2835_sdhost_write_block_pio(struct bcm2835_host *host)
 			copy_words -= words;
 
 			while (words) {
-				bcm2835_sdhost_write(host, *(buf++), SDDATA);
+				bcm2835_sdhost_write(host, le32_to_cpu(*(buf++)), SDDATA);
 				words--;
 			}
 		}
