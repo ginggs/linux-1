@@ -17,7 +17,7 @@
  *
  *
  ******************************************************************************/
-#ifndef _LINUX_BYTEORDER_SWAB_H
+#if !defined( _LINUX_BYTEORDER_SWAB_H ) && !defined( _UAPI_LINUX_SWAB_H )
 #define _LINUX_BYTEORDER_SWAB_H
 
 #if !defined(CONFIG_PLATFORM_MSTAR)
