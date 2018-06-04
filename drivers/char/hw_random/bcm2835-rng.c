@@ -46,7 +46,7 @@ static int bcm2835_rng_read(struct hwrng *rng, void *buf, size_t max,
 	u32 max_words = max / sizeof(u32);
 	u32 num_words, count;
 
-	while ((__raw_readl(rng_base + RNG_STATUS) >> 24) == 0) {
+	while ((readl_relaxed(rng_base + RNG_STATUS) >> 24) == 0) {
 		if (!wait)
 			return 0;
 		cpu_relax();
@@ -102,9 +102,9 @@ static int bcm2835_rng_probe(struct platform_device *pdev)
 		rng_setup(rng_base);
 
 	/* set warm-up count & enable */
-	if (!(__raw_readl(rng_base + RNG_CTRL) & RNG_RBGEN)) {
-		__raw_writel(RNG_WARMUP_COUNT, rng_base + RNG_STATUS);
-		__raw_writel(RNG_RBGEN, rng_base + RNG_CTRL);
+	if (!(readl_relaxed(rng_base + RNG_CTRL) & RNG_RBGEN)) {
+		writel_relaxed(RNG_WARMUP_COUNT, rng_base + RNG_STATUS);
+		writel_relaxed(RNG_RBGEN, rng_base + RNG_CTRL);
 	}
 	/* register driver */
 	err = hwrng_register(&bcm2835_rng_ops);
@@ -122,7 +122,7 @@ static int bcm2835_rng_remove(struct platform_device *pdev)
 	void __iomem *rng_base = (void __iomem *)bcm2835_rng_ops.priv;
 
 	/* disable rng hardware */
-	__raw_writel(0, rng_base + RNG_CTRL);
+	writel_relaxed(0, rng_base + RNG_CTRL);
 
 	/* unregister driver */
 	hwrng_unregister(&bcm2835_rng_ops);
